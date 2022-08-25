@@ -13,28 +13,29 @@ with open(ont, "r") as fn:
   terms={}
   for n in fn:
     (k,v1,v2)=n.split(",")
-    terms[k]=[k,v1, int(v2)]
+    terms[k]=[k,v1, int(v2)] # assign effect as key and effect,prority class, level to value
 
 def find_priority(acceptlist):
-   nondup= [*set(acceptlist)] # alisy of SO terms
-   length=len(nondup)
+   nondup= [*set(acceptlist)] # remove duplicates 
+   length=len(nondup) 
    final = {}
    for i in nondup:
-       final[terms[i][0]]=terms[i][2]
-   return(max(final.items(),key = operator.itemgetter(0))[0])
+       final[terms[i][0]]=terms[i][2] #access the priority level using effect name as key and assign lvel as value to final dict
+      # access effect name using effect name as key for terms
+   return(max(final.items(),key = operator.itemgetter(0))[0]) # return key/effect with highest value 
 
 def readvcf(vcf):
-      effect=pd.read_csv(vcf, sep="\t", names=["EFFECT", "IMPACT"])
+      effect=pd.read_csv(vcf, sep="\t", names=["EFFECT", "IMPACT"]) 
       effect["EFFECT"]=effect["EFFECT"].str.replace("&", " ")
       effect["EFFECT"]=effect["EFFECT"].str.split()
-      e2=effect[effect["EFFECT"].map(len)>1]
+      e2=effect[effect["EFFECT"].map(len)>1] # find rows in effect column that has more tha oe element in list 
       t=find_priority(e2.iloc[0,0])
       singleef=effect[effect["EFFECT"].map(len)==1]
-      e2["FINAL"]=e2.apply(lambda x: find_priority(x["EFFECT"]), axis=1)  
-      singleef["EFFECT"]=singleef["EFFECT"].agg(lambda l: "".join(str(s) for s in l))
+      e2["FINAL"]=e2.apply(lambda x: find_priority(x["EFFECT"]), axis=1)  # find most severe effect using find priority per row 
+      singleef["EFFECT"]=singleef["EFFECT"].agg(lambda l: "".join(str(s) for s in l)) # join text by strinng 
       combined=singleef["EFFECT"].append(e2["FINAL"])
       
-      freq=combined.value_counts().to_frame()
+      freq=combined.value_counts().to_frame() # count differenent connsequence and convert to dataframe 
       print(freq)
       print(freq.dtypes)
       print(freq.columns)
