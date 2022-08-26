@@ -17,19 +17,21 @@ def retaingenotype(gtubsetfile):
   gtdf=pd.DataFrame(columns=spnames)
   #print(gtdf)
   print(genotypedf)
+  print(spnames)
   #for i in spnames[1:]:
   #genotypedf.apply(pd.to_numeric(error="ignore"))
   for i in spnames[1:]:
-    genotypedf[i] = np.where(genotypedf[i].str.match('[0-9]+/[1-9]+') , "1", genotypedf[i])
-    genotypedf[i] = np.where(genotypedf[i].str.match('0/0'), "0" , genotypedf[i])
-  genotypedf[spnames[1:]] = genotypedf[spnames[1:]].astype('int')
-  #genotypedf.iloc[:,1:].replace(0, np.nan , inplace=True) 
-  #print(genotypedf)
-  genotypedf['SUM']=genotypedf.iloc[:,1:].sum(axis=1)
+	  genotypedf[i] = np.where(genotypedf[i].str.match('[0-9]+/[1-9]+') , "1", genotypedf[i])
+	  genotypedf[i] = np.where(genotypedf[i].str.match('0/0'), "0" , genotypedf[i])  
+	  genotypedf[i] = np.where(genotypedf[i].str.match('[0-9]+/[0-9]+') , "1", genotypedf[i])
+
   
+  genotypedf[spnames[1:]] = genotypedf[spnames[1:]].astype('int')
+  print(genotypedf)
+  genotypedf['SUM']=genotypedf.iloc[:,1:].sum(axis=1)
   subsetgt=genotypedf[["CHROM", "SUM"]]
   
-  subsetgt.to_csv("../filtering/bcftoolstest/allsamplesfilteredqual30chr"+ chrnum +"snpfrq.txt", sep = "\t", header=True , index=False)
+  subsetgt.to_csv("../filtering/bcftoolstest/allsamplesfilteredqual30chr"+ chrnum +"snpfrq3.txt", sep = "\t", header=True , index=False)
   return(subsetgt)
   
 test=retaingenotype(filename)
