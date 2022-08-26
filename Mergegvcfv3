@@ -1,0 +1,305 @@
+import pandas
+import os
+GENOME="/data/SBBS-BuschLab/genomes/GRCz11/GRCz11.fa"
+samples = pandas.read_table("samples_half.tsv").set_index("sample", drop=False)
+#samples=  pandas.read_table("samples_test2.tsv").set_index("sample", drop=False) 
+
+region = list(range(1,26))
+region.append('other')
+
+chr =["00","01","02","03","04","05","06","07","08","09"]      
+chr.extend(list(range(10,25)))
+chr.append("other")
+
+strelka_samples="samples-strelka.tsv"
+st_samples=[]
+
+with open(strelka_samples ,"r") as fn:
+  for s in fn:
+    s=s[:-2]
+    st_samples.append(s)
+
+
+
+rule all:
+  input:
+    "bcftools/allsamplescleaned.vcf.gz",
+    "strelka/allsamplescleaned.vcf.gz",
+    "gatk/allsamplescleaned.vcf.gz"
+    
+  
+rule bcftools_merge:
+  priority: 1
+  envmodules:
+    "bcftools/1.15.1"
+  input:
+    samples="samples-bcftools_toprocess.tsv",
+    intervals="intervals/{chr}.bed.gz"
+  output:
+    vcf=temp("bcftools/allsampleschr{chr}.vcf.gz")
+  resources:
+    runtime=240,
+    mem=1,
+    cpus=10
+  log:
+    "bcftools/chr{chr}.log"   
+  shell:
+    """( awk '{{ print $1"_bcftools.g.vcf.gz" }}' {input.samples} > bcftools-gvcfs.txt ; """
+    " bcftools merge --threads {resources.cpus} -l bcftools-gvcfs.txt  -R {input.intervals} -Oz  -o {output.vcf} )"
+    
+rule bcf_filterquality:
+  priority: 2
+  envmodules:
+    "bcftools/1.15.1"
+  input:
+    vcf="bcftools/allsampleschr{chr}.vcf.gz"
+  output:
+    filteredvcf=temp("bcftools/filteredallsampleschr{chr}.vcf")
+  resources:
+    runtime=240,
+    cpus=4
+  shell:
+     """bcftools view -e --threads {resources.cpus} ' QUAL < 30 ' {input}  -o  {output} -O v """
+
+rule bcf_retainnaturalvariants:
+  priority: 3
+  input:
+    samples="samples_half.tsv",
+    filteredvcf="bcftools/filteredallsampleschr{chr}.vcf"
+  output:
+    filteredvcf=temp("bcftools/filteredallsampleschr{chr}naturalvariants.vcf")
+  resources:
+    runtime=240
+  log:
+    "log/filterinducedmutationschr{chr}.log"
+  script:
+     "scripts/retain_noninducedmut.py"
+     
+rule filter_missingaltqualgvcfblock:
+  priority: 4
+  envmodules:
+    "htslib/1.15.1"
+  input:
+    filteredvcf="bcftools/filteredallsampleschr{chr}naturalvariants.vcf"
+  output:
+    vcfcleaned="bcftools/cleanedallsampleschr{chr}naturalvariants.vcf"
+  resources:
+    runtime=240
+  shell:
+    """grep -v "END=" {input.filteredvcf} | awk '$6 != "."' | awk '$5 !="."' > {output.vcfcleaned} """
+    
+rule concat_bcfvcf:
+  priority: 5
+  envmodules:
+    "bcftools/1.15.1"
+  input: 
+    expand("bcftools/cleanedallsampleschr{chr}naturalvariants.vcf", chr=chr)
+  output: 
+    "bcftools/allsamplescleaned.vcf.gz"
+  resources:
+    mem=5,
+    runtime=240,
+    cpus=4
+  log:
+    "bcftools/merge.log"
+  shell:
+    "bcftools concat --threads {resources.cpus} {input} -Oz -o {output}  "
+
+
+rule compress:
+  priority:6
+  envmodules:"htslib/1.15.1" 
+  input:
+    "{sample}/strelka.S1.vcf"
+  output:
+    compressed="{sample}/strelka.S1.vcf.gz",
+    index="{sample}/strelka.S1.vcf.gz.tbi"
+  resources:
+    runtime=240
+  shell:
+    "bgzip {wildcards.sample}/strelka.S1.vcf ; "
+    "tabix {wildcards.sample}/strelka.S1.vcf.gz "
+
+
+rule gvcf_mergechr:
+  priority: 7
+  envmodules:"gvcfgenotyper/2019.02.26"
+  input:
+    list="samples-strelka.tsv",
+    ref=GENOME,
+    index=expand("{sample}/strelka.S1.vcf.gz", sample=st_samples)
+  output:
+   temp("strelka/strelkachr{region}.S1.vcf")
+  resources:
+    runtime=240
+  shell:
+    """( awk '{{ print $1"strelka.S1.vcf.gz" }}' {input.list} > strelkatest-gvcfs.txt ; """
+    " echo  -r {wildcards.region} -f {input.ref} -l strelkatest-gvcfs.txt  -O v -o {output} | xargs -n1 gvcfgenotyper )"
+
+
+rule get_contigs:
+  priority:8
+  input:
+    "{sample}/strelka.S1.vcf.gz"
+  output:
+    temp("{sample}/strelkachrother.S1.vcf")
+  resources:
+    runtime=240
+  shell:
+    "gunzip {input} ; "
+    """ awk  -e '/#|^K|^M/{{print}}' {wildcards.sample}/strelka.S1.vcf  > {output} """
+  
+
+rule gvcf_genotyper_contigsfile:
+  priority:9
+  input:
+    expand("{sample}/strelkachrother.S1.vcf",sample=st_samples)
+  output:
+    list=temp("strelka/strelka-gvcfsother.txt"),
+    listmod=temp("strelka/strelka-gvcfsothermod.txt")
+  resources:
+    runtime=240
+  run:
+    shell("chmod u+rwx {input}")
+    with open(output[0] , "a") as filelist: 
+        filelist.write(" ".join(input))
+    shell("""perl  -lpe 's/ /\n/g' strelka/strelka-gvcfsother.txt > strelka/strelka-gvcfsothermod.txt""")
+  
+rule gvcf_mergecontigs:
+  priority:10
+  envmodules: "gvcfgenotyper/2019.02.26"
+  input:
+    list="strelka/strelka-gvcfsothermod.txt",
+    ref=GENOME
+  output:
+    "strelka/strelkachrother.S1.vcf"
+  resources:
+    runtime=240
+  shell:
+    "gvcfgenotyper  -f {input.ref} -l {input.list} -O v -o {output} "
+
+
+rule strelka_filter:
+  priority: 11
+  envmodules:
+    "bcftools/1.15.1"
+  input:
+    strelka="strelka/strelkachr{region}.S1.vcf"
+  output:
+    filteredstrelka=temp("strelka/filteredqualallsamples{region}.vcf")
+  resources:
+    cpus=5
+  shell:
+     """bcftools view  --threads {resources.cpus} -e  ' QUAL < 30' {input}  -o  {output} -O v """
+
+rule strelka_retainnaturalvariants:
+  priority: 12
+  input:
+    samples="samples_half.tsv",
+    filteredvcf="strelka/filteredqualallsamples{region}.vcf"
+  output:
+    filteredvcf="strelka/allsamples{region}naturalvaraints.vcf"
+  resources:
+    runtime=240
+  log:
+    "strelka/filterinducedmutationschr{region}.log"
+  script:
+    "scripts/retain_noninducedmut.py"
+
+   
+rule concat_strelkavcf:
+  priority: 13
+  envmodules:
+    "bcftools/1.15.1"
+  input: 
+    expand("strelka/allsamples{region}naturalvaraints.vcf", region=region)
+  output: 
+    "strelka/allsamplescleaned.vcf.gz"
+  resources:
+    mem=1,
+    runtime=240,
+    cpus=5
+  log:
+    "strelka/merge.log"
+  shell:
+    "bcftools concat --threads {resources.cpus} {input} -Oz -o {output}  "
+
+rule genomicsdb:
+  priority: 14
+  envmodules:
+    "GATK/4.2.6.0" 
+  input: 
+    ID="samples-gatk.tsv",
+    intervals="intervals/{region}.list"
+  output:
+    directory("gatk/genomics{region}_db")
+  resources:
+    mem=1,
+    runtime=240,
+    resources=10
+  shell: 
+    """ (awk '{{ print $1 "\t" $1 "gatk.g.vcf.gz"}}' {input.ID}  | awk '{{sub(/\//," ",$1)}};1' |  awk '{{print $2 "\t" $3 $4}}' > gatk-gvcf.sample_map ; """
+    " gatk GenomicsDBImport --reader-threads {resources.cpus} --genomicsdb-workspace-path {output}  --sample-name-map gatk-gvcf.sample_map -L {input.intervals} -VS SILENT ) "
+  
+
+rule gatkgenotyper:
+  priority: 15
+  envmodules:
+    "GATK/4.2.6.0"
+  input: 
+    ref=GENOME,
+    db="gatk/genomics{region}_db"
+  output: 
+   vcf=temp("gatk/{region}.vcf.gz")
+  resources:
+    mem=5,
+    runtime=240
+  shell:
+    "gatk GenotypeGVCFs -R {input.ref} -V gendb://gatk/genomics{wildcards.region}_db -O {output.vcf}  -VS SILENT "
+
+rule gatk_filter:
+    priority: 16
+    envmodules:
+      "bcftools/1.15.1"
+    input:
+      gatk="gatk/{region}.vcf.gz"
+    output:
+     filteredgatk=temp("gatk/filteredqualallsampleschr{region}.vcf")
+    resources:
+      cpus=5
+      mem=2
+    shell:
+      """bcftools view  --threads {resources.cpus} -e  ' QUAL < 80' {input}  -o  {output} -O v"""
+
+rule gatk_retainnaturalvariants:
+  priority: 17
+  input:
+    samples="samples_half.tsv",
+    filteredvcf="gatk/filteredqualallsampleschr{region}.vcf"
+  output:
+    naturalvcf="gatk/filteredallsampleschr{region}naturalvariants.vcf"
+  resources:
+    runtime=240
+  log:
+    "gatk/filterinducedmutationschr{region}.log"
+  script:
+     "scripts/retain_noninducedmut.py" 
+
+rule concat_gatkvcf:
+  priority: 18
+  envmodules:
+    "bcftools/1.15.1"
+  input: 
+    expand("gatk/filteredallsampleschr{region}naturalvariants.vcf", region=region)
+  output: 
+    "gatk/allsamplescleaned.vcf.gz"
+  resources:
+    mem=5,
+    runtime=240,
+    cpus=5
+  shell:
+    "bcftools concat --threads {resources.cpus} {input} -Oz -o {output} && "
+    "rm -rf gatk/genomics*_db"
+
+
+  
