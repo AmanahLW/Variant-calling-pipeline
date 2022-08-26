@@ -11,15 +11,11 @@ library("SNPRelate")
 snp.fn<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesfilteredqual30nogvcfnonomssingvarqual.vcf"
 strelka.fn<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/strelkatest/allsamplesfilteredqual30removedphist.vcf"
 
-#header <- seqVCF_Header("/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/strelkatest/allsamplesfilteredqual30.vcf.gz")
-#header$info
-#header$info[header$info$ID=="DP_HIST_ALT", "Number" ]<- "."
-#gds<-seqVCF2GDS(strelka.fn, "samples50_strelka_WT.gds", parallel = 17, header=header, storage.option="LZMA_RA", raise.error=FALSE)
 
 gds<-seqVCF2GDS(strelka.fn, "samples50_strelka_WT.gds", parallel = 10)
 gdsopen <- seqOpen(gds)
   # remove snp with high LD 
-#closefn.gds("allsamples_GATK_WT.gds")
+
 prunedsnp <- snpgdsLDpruning(gdsopen, ld.threshold=0.9 , num.thread = 17) 
 
 prunedsnp.id <- unlist(unname(prunedsnp)) # list to vector 
@@ -27,7 +23,6 @@ prunedsnp.id <- unlist(unname(prunedsnp)) # list to vector
 
 ### load population data 
 strains <- "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/analysis/samples_notSLpop.txt"
-#strains <- "C:/Users/amana/Documents/Queen mary/Filtervariants/samples_notSL.tsv"
 population<-read.delim(strains, header = TRUE, sep = "\t")
 
 calculatepca<-function(genofile){
@@ -43,12 +38,7 @@ calculatepca<-function(genofile){
 }
 
 calculatepca(gdgeno)
-# percentag of PC 
-#pcomp.percent <- wt_pca$varprop*100
-#head(round(pcomp.percent, 3)) # round to 2 dp
-# most variance expaned in pc 1 and 2
 
-## concat population name to sample.id
 
 plot_pca<- function(){
   pca<-calculatepca(gdgeno)
