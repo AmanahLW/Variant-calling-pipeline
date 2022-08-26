@@ -6,10 +6,7 @@
 #$ -o run_mergechrsnpfrq.o
 #$ -e run_mergechrsnpfrq.e
 
-#allsamplesfilteredqual30chr"+ chrnum +"snpfrq.txt"
-#allsamplesfilteredqual80v2chr8snpfrq.txt
-#allsamplesfilteredqual30chr1snpfrq.txt
-#allsamplesfilteredqual30chr"+ chrnum +"snpfrq2.txt
+
 head -n 1 ../filtering/bcftoolstest/allsamplesfilteredqual30chr1snpfrq3.txt  > ../filtering/bcftoolstest/allsamplesfilteredqual30snpfreqv5.txt
 declare -a chr=("1" "2" "3"  "4" "5"  "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25" "contigs")
 
