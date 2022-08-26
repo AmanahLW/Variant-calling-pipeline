@@ -4,5 +4,4 @@ awk '{print $8}' ../filtering/gatktest/ allsamplesfilteredqual80v2noheader.vcf >
 
 # get first predition
 # get impact and consequence
-awk -F ';CSQ=|[|],' '{print $2}' ../filtering/gatktest/allsamplesqual80vepinfofield.txt | awk -F '[|]|[|]' 
-'{print $2 "\t" $3}' > ../filtering/gatktest/allsamplesqual80vepinfofieldextract.txt
+awk -F ';CSQ=|[|],' '{print $2}' ../filtering/gatktest/allsamplesqual80vepinfofield.txt | awk -F '[|]|[|]' '{print $2 "\t" $3}' > ../filtering/gatktest/allsamplesqual80vepinfofieldextract.txt
