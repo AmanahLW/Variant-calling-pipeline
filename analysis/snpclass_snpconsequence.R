@@ -7,17 +7,15 @@ library("stringr")
 effect_count<-"allsamplesbcffilteredqual30valuecounts.txt"
 ont_terms<-"ontologyeffect.csv"
 ploteffect<-function(effects,ont){
-  # accept file made by filterconsequence5.py
   effectcounts=read.delim(effects, sep="\t", header=FALSE)
   ontology=read.csv(ont, header=FALSE)
   terms<-ontology[,1]
   colnames(effectcounts)<- c("Consequence", "Counts")
-  terms_rec <- terms[terms %in% effectcounts$Consequence]
+  terms_rec <- terms[terms %in% effectcounts$Consequence] # check which values are in ont dataset
   
-  effectcounts$Consequence<-as.factor(effectcounts$Consequence)
-  effectcounts$Consequence<-factor(effectcounts$Consequence, levels = terms_rec)
-  print(str(effectcounts))
-  #effectcounts$Consequence<-str_replace(effectcounts$Consequence,"_"," ")
+  effectcounts$Consequence<-as.factor(effectcounts$Consequence) # change to factor
+  effectcounts$Consequence<-factor(effectcounts$Consequence, levels = terms_rec) # assign each effect as levels according to format of ont data 
+  
   png("effectcount.png", width = 1000, height = 1000, res=100)
   
   fig<-ggplot(effectcounts, aes(x=`Consequence`, y=Counts, 
@@ -34,7 +32,7 @@ ploteffect<-function(effects,ont){
               axis.title = element_text(size = 15)) +
               scale_y_continuous(labels = function(y) format(y,scientific = FALSE )) +
               ylab("Counts (log10)") +
-              guides(fill=guide_legend(ncol =1), color=guide_legend(ncol =1))
+              guides(fill=guide_legend(ncol =1), color=guide_legend(ncol =1)) # make legend a sigle column
   print(fig)  
   dev.off()            
   print(sum(effectcounts$Counts))
