@@ -14,7 +14,8 @@ chr.append("other")
 strelka_samples="samples-strelka.tsv"
 st_samples=[]
 
-with open(strelka_samples ,"r") as fn:
+# append strelka samples to list as need to access gvcf samples to get contigs region 
+with open(strelka_samples ,"r") as fn: 
   for s in fn:
     s=s[:-2]
     st_samples.append(s)
