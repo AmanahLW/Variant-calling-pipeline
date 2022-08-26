@@ -45,8 +45,8 @@ plots<-plot_grid(qualst,dpst,qualbcf,dpbcf,qualgatk,dpgatk,
          ncol=2, nrow=3 , align= "hv", label_size = 20 ,hjust=-0.7 , vjust= 0.2, rel_heights = c(10, 10)) +
         theme(plot.margin = unit(c(1,0.5,0.5,0.5), "cm"))  
 
-removeclips <- ggplot_gtable(ggplot_build(plots))
-removeclips$layout$clip[removeclips$layout$name == "panel"] <- "off"
+removeclips <- ggplot_gtable(ggplot_build(plots)) # remove clips on ggttable
+removeclips$layout$clip[removeclips$layout$name == "panel"] <- "off" # suubset remove clips
 
 
 grid.draw(removeclips)
@@ -71,7 +71,7 @@ plotqual<-function(df){
   print(qualdensity)
   
 }
-0.09
+
 plotdp<- function(df){
   dpdensity<-ggplot(df, aes(DP)) +
               geom_density(fill= "#84FFFF",color="#84FFFF", na.rm = TRUE ,bw=0.09 ) +
