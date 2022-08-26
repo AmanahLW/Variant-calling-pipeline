@@ -43,9 +43,9 @@ plots<-plot_grid(qualst,dpst,qualbcf,dpbcf,qualgatk,dpgatk,
          labels=c("a) Strelka2"," ", "b) BCFTools", " ", "c) GATK", " "),
          ncol=2, nrow=3 , align= "hv", label_size = 20 ,hjust=-0.7 , vjust= 0.2, rel_heights = c(10, 10)) +
         theme(plot.margin = unit(c(1,0.5,0.5,0.5), "cm"))  
-
-removeclips <- ggplot_gtable(ggplot_build(plots)) # remove clips on ggttable
-removeclips$layout$clip[removeclips$layout$name == "panel"] <- "off" #turn off clipping
+# remove clips on top of graph
+removeclips <- ggplot_gtable(ggplot_build(plots)) 
+removeclips$layout$clip[removeclips$layout$name == "panel"] <- "off" 
 
 
 grid.draw(removeclips)
