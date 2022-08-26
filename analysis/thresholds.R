@@ -10,7 +10,6 @@ bcf<-"allsamplesbcffilteredqual30qualdpnomissqualvar.txt"
 gatk<-"allsamplesgatkfilteredqual80v2qualdp.txt"
 strelka<-"allsamplesstrelkafilteredqual30qualanddp.txt"
 #strelka<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/strelkatest/allsamplesfilteredqual30qualanddp.txt"
-#bcf<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesbcffilteredqual30qualdpnomissingqualscore.txt"
 #bcf<- "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesfilteredqual30qualdpnomissqualvar.txt"
 #gatk<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/gatktest/allsamplesgatkfilteredqual80v2qualdp.txt"
 ############Find threshold for vcf strelka filter############
