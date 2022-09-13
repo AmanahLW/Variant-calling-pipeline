@@ -1,9 +1,6 @@
 library("ggplot2")
 library("stringr")
 
-
-#effect_count<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/gatktest/allsamplesfilteredqual80valuecoounts.txt"
-#effect_count<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesbcffilteredqual30valuecoounts.txt"
 effect_count<-"allsamplesbcffilteredqual30valuecounts.txt"
 ont_terms<-"ontologyeffect.csv"
 ploteffect<-function(effects,ont){
