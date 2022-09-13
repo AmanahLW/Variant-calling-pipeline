@@ -1,4 +1,4 @@
-# get genotype column from VCF
+# get genotype and chrom column from VCF
 cut -f -1,10-  
 
 # remove text which is not genotype
