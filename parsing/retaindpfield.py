@@ -1,14 +1,6 @@
-
-
-
 import re
 import pandas as pd
 
-
-
-#variantgatk = "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/gatk/allsamples.tsv"
-#variantbcf = "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/bcftools/merge_bcftoolsvariants.tsv"
-#variantsstrelka =  "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/strelkatest/allsamples50samplessubset.vcf"
 
 strelka="/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/strelkatest/allsamplesfilteredqual30samples.txt"  
 dpstrelka="/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/strelkatest/allsamplesstrelkafilteredqual30dpsumv2.txt" 
