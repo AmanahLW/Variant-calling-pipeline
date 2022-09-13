@@ -1,9 +1,6 @@
 import pandas as pd
 import re
-#gatk="C:/Users/amana/Documents/Queen mary/Filtervariants/allsamplesfilteredqual80chr1noheader.txt"
-#gatk="/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/gatktest/allsamplesfilteredqual80v2noheader.txt"
-#bcf="/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesbcftoolsfilteredqual30nogvcfnoheader.txt"
-#bcf= "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesfilteredqual30nogvcfv3cleanednoheader.vcf"
+
 bcf= "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesfilteredqual30nogvcfnonomssingvarqualnoheader.txt"
 
 with open(bcf, "r") as fn: # accept whole vcf
