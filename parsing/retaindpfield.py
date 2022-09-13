@@ -3,8 +3,8 @@
 
 import re
 import pandas as pd
-import matplotlib.pyplot as plot
-import seaborn as sb 
+
+
 
 #variantgatk = "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/gatk/allsamples.tsv"
 #variantbcf = "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/bcftools/merge_bcftoolsvariants.tsv"
