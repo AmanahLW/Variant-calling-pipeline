@@ -22,7 +22,7 @@ def retaingenotype(gtubsetfile):
 	  genotypedf[i] = np.where(genotypedf[i].str.match('[0-9]+/[0-9]+') , "1", genotypedf[i]) # match geotypes [0-9]+/10
 
   
-  genotypedf[spnames[1:]] = genotypedf[spnames[1:]].astype('int') # connvert to int from seocndn column
+  genotypedf[spnames[1:]] = genotypedf[spnames[1:]].astype('int') # connvert to int from second column
   print(genotypedf)
   genotypedf['SUM']=genotypedf.iloc[:,1:].sum(axis=1) # sum 1 in each row and add sum 
   subsetgt=genotypedf[["CHROM", "SUM"]]
