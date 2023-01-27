@@ -4,7 +4,7 @@ A reproducible snakemake workflow for identifying strain specific variants in Da
 Dependencies: Snakemake 7.7.0 Pandas 1.4.2 BWA/0.7.17 samtools/1.15.1 biobambam2/2.0.146 bcftools/1.15.1 htslib/1.15.1 GATK/4.2.6.0 Strelka2/2.9.10 gvcfgenotyper/2019.02.26
 
 Execution: snakemake --use-envmodules --profile gridengine --snakefile Snakefile
-snakemake --use-envmodules --profile gridengine --snakefile Mergegvcfv3
+snakemake --use-envmodules --profile gridengine --snakefile Mergegvcf
 bash samplecallers.sh
 
 Supervisors: Ian Sealy and Elisabeth Busch-Nentwich
