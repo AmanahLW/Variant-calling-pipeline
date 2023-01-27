@@ -11,7 +11,5 @@ module load Snakemake/7.7.0
 module load pandas/1.4.2
 
 
-#snakemake   --use-envmodules  --profile gridengine   --snakefile Merge_GVCFv2  --directory  
-#/data/scratch/bt211065/20220802_Researchproject/ \
-#--configfile /data/scratch/bt211065/20220802_Researchproject/gridengine/config.yaml --rerun-incomplete
-snakemake   --use-envmodules  --profile gridengine   --snakefile Mergegvcfv3 
+
+snakemake   --use-envmodules  --profile gridengine   --snakefile Mergegvcf
