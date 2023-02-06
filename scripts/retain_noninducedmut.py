@@ -3,15 +3,9 @@ import numpy as np
 import re
 import sys
 
-#samples="/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/samples_half.tsv" 
 samples=snakemake.input[0]
-#bcftools/chr{chr}merge_bcftools.vcf.gz
-#vcftofilter= "/data/scratch/bt211065/20220802_Researchproject/filteredmerge_bcftools.vcf"
 vcftofilter=snakemake.input[1]
 
-#filename = sys.argv[1]
-#pattern= re.compile("qualchr([0-9]*|[a-z]*)allsamples")
-#chrnum=pattern.search(filename).group(1)
 
 
 # sample/strain /library
@@ -22,9 +16,6 @@ with open(samples) as sf:
       s=s.split()
       samplesandlibrary[s[0]]= s[2] ## extract sample and library 
 
-#print(samplesandlibrary)
-
-#with open("filtered_noninducedmuation" + chrnum + ".vcf" , "a") as towrite:
 
 with open(snakemake.output[0] , "a") as towrite:
   with open(vcftofilter,"r") as fn:
