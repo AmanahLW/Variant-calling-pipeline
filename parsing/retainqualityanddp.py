@@ -3,10 +3,9 @@ import re
 
 bcf= "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesfilteredqual30nogvcfnonomssingvarqualnoheader.txt"
 
-with open(bcf, "r") as fn: # accept whole vcf
+with open(bcf, "r") as fn: # accept  vcf
   records=[]
   pattern= re.compile("DP=([0-9]*);")
-  #dp=pattern.search(filename).group(1)
   for i in fn:
     if "CHROM" in i:
       header=i
