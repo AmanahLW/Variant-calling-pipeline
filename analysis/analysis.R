@@ -8,8 +8,8 @@ library("gdsfmt")
 library("SeqArray")
 library("SNPRelate")
 #snp.fn<- "/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/gatktest/allsamplesfilteredqual80.vcf"
-snp.fn<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesfilteredqual30nogvcfnonomssingvarqual.vcf"
-strelka.fn<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/strelkatest/allsamplesfilteredqual30removedphist.vcf"
+#snp.fn<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesfilteredqual30nogvcfnonomssingvarqual.vcf"
+#strelka.fn<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/strelkatest/allsamplesfilteredqual30removedphist.vcf"
 
 
 gds<-seqVCF2GDS(strelka.fn, "samples50_strelka_WT.gds", parallel = 10)
@@ -47,7 +47,7 @@ plot_pca<- function(){
   print(wt_pca)
   print(pca[[3]])
   strain <- as.vector(population[,2])
-  # percentag of PC 
+  # percentage of PC 
   pcomp.percent <- wt_pca$varprop*100
   print(pcomp.percent) 
   pcadf <- data.frame(wt_pca$sample.id,
@@ -78,9 +78,9 @@ plot_pca<- function(){
 }
 plot_pca()
 # paste pc 1 to 4 as new lines
-# format pc 1 to3 percentage rounded by 2 
+# format pc 1 to 3 percentage rounded by 2 
 # no delimiter between pc 
-# paste pc 1 to 4 as apir 
+# paste pc 1 to 4 as pair 
 # assign color by population 
 # label pairs with groups 
 seqClose(gdgeno)
