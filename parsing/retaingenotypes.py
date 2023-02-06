@@ -13,18 +13,16 @@ def retaingenotype(gtubsetfile):
   spnames=list(genotypedf.columns)
   
   
-  print(genotypedf)
-  print(spnames)
+ 
   
   for i in spnames[1:]:
-	  genotypedf[i] = np.where(genotypedf[i].str.match('[0-9]+/[1-9]+') , "1", genotypedf[i]) # match all gt except for 0/10 ad 0/0
+	  genotypedf[i] = np.where(genotypedf[i].str.match('[0-9]+/[1-9]+') , "1", genotypedf[i]) # match all gt except for 0/10 and 0/0
 	  genotypedf[i] = np.where(genotypedf[i].str.match('0/0'), "0" , genotypedf[i])  # match 0/0
 	  genotypedf[i] = np.where(genotypedf[i].str.match('[0-9]+/[0-9]+') , "1", genotypedf[i]) # match geotypes [0-9]+/10
 
   
   genotypedf[spnames[1:]] = genotypedf[spnames[1:]].astype('int') # connvert to int from second column
-  print(genotypedf)
-  genotypedf['SUM']=genotypedf.iloc[:,1:].sum(axis=1) # sum 1 in each row and add sum 
+  genotypedf['SUM']=genotypedf.iloc[:,1:].sum(axis=1) # sum of all 1 in each row 
   subsetgt=genotypedf[["CHROM", "SUM"]]
   
   subsetgt.to_csv("../filtering/bcftoolstest/allsamplesfilteredqual30chr"+ chrnum +"snpfrq3.txt", sep = "\t", header=True , index=False)
