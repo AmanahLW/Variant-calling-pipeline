@@ -1,7 +1,6 @@
 library("ggplot2")
 
 
-#snptypecount<-"/data/scratch/bt211065/20220505_Researchproject/variant-calling-2022-main/snakemake/test/filtering/bcftoolstest/allsamplesbcftoolsfilteredqual30snptype.csv"
 snptypecount<-"allsamplesbcftoolsfilteredqual30snptype.csv"
 
 plot_snptype<-function(dfcounts){
